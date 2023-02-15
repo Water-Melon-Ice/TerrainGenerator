@@ -1,14 +1,14 @@
 from PIL import Image
 import numpy as np
 from math import floor, ceil, sqrt
+import time
 
 
 
-
-width, height = 20, 20
-xpix, ypix = 2000, 2000
-octaves = 4
-octavesFactor = 2
+width, height = 4, 4
+xpix, ypix = 2000, 1000
+octaves = 1
+octavesFactor = 4
 count = 1
 downpush = 0
 
@@ -83,20 +83,20 @@ class Noise:
     
 def generate(seed):
     noise = Noise(seed, xFrequency = width, yFrequency = height, octaves = octaves, amplitudeFactor = 0.4,ampliudeOffset = -0.3, octavesFactor = octavesFactor)
-    pixels = np.zeros((ypix,xpix))
+    pixels = np.zeros((xpix,ypix))
     
-    for i in range(ypix):
-        for j in range(xpix):
-            val=noise.getValue(j / xpix, i / ypix)
+    for i in range(xpix):
+        for j in range(ypix):
+            val=noise.getValue(i / xpix, j / ypix)
             pixels[i,j] = val
             
     
     map = Image.new( mode = "RGB", size = (xpix, ypix) )
     pxn = map.load()
     
-    for y in range(ypix):
-        for x in range(xpix):
-            temp = pixels[y,x]
+    for x in range(xpix):
+        for y in range(ypix):
+            temp = pixels[x,y]
             if(temp > 0.95 + downpush):
                 color = (255,255,255)
             elif temp > 0.8 + downpush:
@@ -121,7 +121,8 @@ def generate(seed):
                 color = (0,0,128)
             else: 
                 color = (0,0,0)
-            pxn[y,x] = color
+            pxn[x,y] = color
+    
     map.show()
     map.save("generated_image_" + str(xpix) + "-" + str(ypix) + "-" + str(seed) + ".png")
     

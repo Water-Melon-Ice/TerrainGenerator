@@ -1,16 +1,26 @@
 from PIL import Image
 import numpy as np
 from math import floor, ceil, sqrt
+import random
 
 seed = 10
 
 np.random.seed(seed)
-frequency = 10 
 width, height = 10, 10
 xpix, ypix = 800, 800
-#matrix = np.random.sample((frequency + 1,2))   #2=number_of_dimensions + 1
-matrix = np.random.sample((width + 1, height + 1))
+matrix = np.random.sample((width + 1, height + 1)) 
 
+horizontallyTileable = True
+verticallyTileable = False
+
+
+if horizontallyTileable:
+    for y in range(height + 1):
+        matrix[width, y] = matrix[0, y]
+        
+if verticallyTileable:
+    for x in range(width + 1):
+        matrix[x, height] = matrix[x, 0]
 
 def func2d(x,y):
     xs = floor(x)
@@ -43,14 +53,11 @@ def func2d(x,y):
 
     return retval
     
-
-
-pixels = np.zeros((ypix,xpix))
-
+pixels = np.zeros((xpix,ypix))
 for i in range(ypix):
     for j in range(xpix):
         val=func2d(j / xpix * width, i / ypix * height)
-        pixels[i,j] = val
+        pixels[j,i] = val
         
 
 map = Image.new( mode = "RGB", size = (xpix, ypix) )
@@ -58,7 +65,7 @@ pxn = map.load()
 
 for y in range(ypix):
     for x in range(xpix):
-        temp = pixels[y,x]
+        temp = pixels[x,y]
         if(temp > 0.9):
             color = (255,255,255)
         elif temp > 0.8:
@@ -81,6 +88,6 @@ for y in range(ypix):
             color = (0,0,255)
         else:
             color = (0,0,128)
-        pxn[y,x] = color
+        pxn[x,y] = color
 map.show()
 map.save("generated_image_" + str(xpix) + "-" + str(ypix) + "-" + str(seed) + ".png")

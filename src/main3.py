@@ -5,9 +5,15 @@ from math import floor, ceil, sqrt
 
 
 
-width, height = 200, 200
-xpix, ypix = 1000, 1000
+width, height = 20, 20
+xpix, ypix = 2000, 2000
+octaves = 4
+octavesFactor = 2
 count = 1
+downpush = 0
+
+horizontallyTileable = True
+verticallyTileable = False
 
 class Noise:
     class Octave:
@@ -16,6 +22,15 @@ class Noise:
             self.yFrequency = yFrequency
             self.amplitudeFactor = amplitudeFactor
             self.matrix = np.random.sample((xFrequency + 1, yFrequency + 1))
+            self.p = np.zeros((4))
+            self.d = np.zeros((4))
+            if horizontallyTileable:
+                for y in range(height + 1):
+                    self.matrix[width, y] = self.matrix[0, y]
+        
+            if verticallyTileable:
+                for x in range(width + 1):
+                    self.matrix[x, height] = self.matrix[x, 0]
             
             
         def getValue(self, x, y):
@@ -29,21 +44,20 @@ class Noise:
             if(ys == ym):
                 ym += 1
             
-            p = np.zeros((4))
-            p[0] = self.matrix[xs,ys]
-            p[1] = self.matrix[xs,ym]
-            p[2] = self.matrix[xm,ys]
-            p[3] = self.matrix[xm,ym]
+            self.p[0] = self.matrix[xs,ys]
+            self.p[1] = self.matrix[xs,ym]
+            self.p[2] = self.matrix[xm,ys]
+            self.p[3] = self.matrix[xm,ym]
             
-            d = np.zeros((4))
-            d[0] = sqrt((x-xs)**2 + (y-ys)**2) 
-            d[1] = sqrt((x-xs)**2 + (y-ym)**2) 
-            d[2] = sqrt((x-xm)**2 + (y-ys)**2) 
-            d[3] = sqrt((x-xm)**2 + (y-ym)**2) 
+            self.d[0] = sqrt((x-xs)**2 + (y-ys)**2) 
+            self.d[1] = sqrt((x-xs)**2 + (y-ym)**2) 
+            self.d[2] = sqrt((x-xm)**2 + (y-ys)**2) 
+            self.d[3] = sqrt((x-xm)**2 + (y-ym)**2) 
+            
             
             retval = 0
-            for i in range(len(p)):
-                retval += (max(1 - d[i], 0) * p[i])
+            for i in range(len(self.p)):
+                retval += (max(1 - self.d[i], 0) * self.p[i])
             
             return retval * self.amplitudeFactor
 
@@ -68,7 +82,7 @@ class Noise:
             
     
 def generate(seed):
-    noise = Noise(seed, xFrequency = width, yFrequency = height, octaves = 10, amplitudeFactor = 0.4,ampliudeOffset = -0.3)
+    noise = Noise(seed, xFrequency = width, yFrequency = height, octaves = octaves, amplitudeFactor = 0.4,ampliudeOffset = -0.3, octavesFactor = octavesFactor)
     pixels = np.zeros((ypix,xpix))
     
     for i in range(ypix):
@@ -83,27 +97,27 @@ def generate(seed):
     for y in range(ypix):
         for x in range(xpix):
             temp = pixels[y,x]
-            if(temp > 0.9):
+            if(temp > 0.95 + downpush):
                 color = (255,255,255)
-            elif temp > 0.8:
+            elif temp > 0.8 + downpush:
                 color = (80,80,80)
-            elif temp > 0.75:
+            elif temp > 0.75 + downpush:
                 color = (60,60,60)
-            elif temp > 0.6:
+            elif temp > 0.6 + downpush:
                 color = (32,160,32)
-            elif temp > 0.55:
+            elif temp > 0.55 + downpush:
                 color = (32,200,32)
-            elif temp > 0.5:
+            elif temp > 0.5 + downpush:
                 color = (245,245,200)
-            elif temp > 0.4:
+            elif temp > 0.4 + downpush:
                 color = (128,128,255)
-            elif temp > 0.3:
+            elif temp > 0.3 + downpush:
                 color = (64,128,255)
-            elif temp > 0.2:
+            elif temp > 0.2 + downpush:
                 color = (0,128,255)
-            elif temp > 0.1:
+            elif temp > 0.1 + downpush:
                 color = (0,0,255)
-            elif temp > 0.01:
+            elif temp > 0.01 + downpush:
                 color = (0,0,128)
             else: 
                 color = (0,0,0)

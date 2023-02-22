@@ -50,15 +50,16 @@ class Noise:
             self.p[2] = self.matrix[xm,ys]
             self.p[3] = self.matrix[xm,ym]
             
-            self.d[0] = sqrt((x-xs)**2 + (y-ys)**2) 
-            self.d[1] = sqrt((x-xs)**2 + (y-ym)**2) 
-            self.d[2] = sqrt((x-xm)**2 + (y-ys)**2) 
-            self.d[3] = sqrt((x-xm)**2 + (y-ym)**2) 
+            self.d[0] = max(1 - sqrt((x-xs)**2 + (y-ys)**2), 0)
+            self.d[1] = max(1 - sqrt((x-xs)**2 + (y-ym)**2), 0)
+            self.d[2] = max(1 - sqrt((x-xm)**2 + (y-ys)**2), 0)
+            self.d[3] = max(1 - sqrt((x-xm)**2 + (y-ym)**2), 0)
             
+            reverseSum = 1 / np.sum(self.d)
             
             retval = 0
             for i in range(len(self.p)):
-                retval += (max(1 - self.d[i], 0) * self.p[i])
+                retval += self.d[i] * self.p[i] * reverseSum
             
             return retval * self.amplitudeFactor
 

@@ -14,6 +14,7 @@ downpush = 0
 
 horizontallyTileable = True
 verticallyTileable = False
+usebw = True
 
 class Noise:
     class Octave:
@@ -86,6 +87,7 @@ def generate(seed):
     pixels = np.zeros((xpix,ypix))
     
     for i in range(xpix):
+        print(i)
         for j in range(ypix):
             val=noise.getValue(i / xpix, j / ypix)
             pixels[i,j] = val
@@ -95,6 +97,7 @@ def generate(seed):
     pxn = map.load()
     
     for x in range(xpix):
+        print(x)
         for y in range(ypix):
             temp = pixels[x,y]
             if(temp > 0.95 + downpush):
@@ -122,6 +125,8 @@ def generate(seed):
             else: 
                 color = (0,0,0)
             pxn[x,y] = color
+            if(usebw):
+                pxn[x,y] = (int(temp * 255), int(temp * 255), int(temp * 255))
     
     map.show()
     map.save("generated_image_" + str(xpix) + "-" + str(ypix) + "-" + str(seed) + ".png")

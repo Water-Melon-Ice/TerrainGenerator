@@ -26,12 +26,12 @@ class Noise:
             self.p = np.zeros((4))
             self.d = np.zeros((4))
             if horizontallyTileable:
-                for y in range(height + 1):
-                    self.matrix[width, y] = self.matrix[0, y]
+                for y in range(yFrequency + 1):
+                    self.matrix[xFrequency, y] = self.matrix[0, y]
         
             if verticallyTileable:
-                for x in range(width + 1):
-                    self.matrix[x, height] = self.matrix[x, 0]
+                for x in range(xFrequency + 1):
+                    self.matrix[x, yFrequency] = self.matrix[x, 0]
             
             
         def getValue(self, x, y):
